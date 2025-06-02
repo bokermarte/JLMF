@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive CV - Jose Luis Martinez Flores</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Visualization & Content Choices:
+        - Hero/About: Text. Goal: Introduce. Method: HTML/Tailwind.
+        - Experience: Interactive Timeline. Goal: Show career progression. Method: HTML/CSS/Tailwind for timeline structure. Justification: More engaging than a list.
+        - Skills: Categorized Lists & Bar Chart. Goal: Showcase technical breadth. Method: HTML/Tailwind for lists. Chart.js for a bar chart showing count of skills per category. Justification: Lists for detail, chart for quick visual summary.
+        - Education: Text. Goal: Inform. Method: HTML/Tailwind.
+        - Academic Experience: Text. Goal: Inform. Method: HTML/Tailwind.
+        - Contact: Text & Links. Goal: Facilitate connection. Method: HTML/Tailwind.
+        All visual elements will use HTML/CSS/Tailwind, or Chart.js Canvas. Icons via Unicode. -->
+    <style>
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Inter', sans-serif; }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: -7px;
+            width: 14px;
+            height: 14px;
+            background-color: #14b8a6; /* teal-500 */
+            border-radius: 50%;
+            z-index: 1;
+        }
+        .timeline-line {
+            position: absolute;
+            top: 20px;
+            left: 0;
+            bottom: 0;
+            width: 2px;
+            background-color: #475569; /* slate-600 */
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 450px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .nav-link {
+            transition: color 0.3s ease;
+        }
+        .nav-link:hover {
+            color: #14b8a6; /* teal-500 */
+        }
+        .section-title-underline::after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 3px;
+            background-color: #14b8a6; /* teal-500 */
+            margin-top: 8px;
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100">
+
+    <header class="bg-slate-950 shadow-md sticky top-0 z-50">
+        <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <span class="font-bold text-xl text-teal-400">Jose Luis Martinez Flores</span>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#about" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-300">About Me</a>
+                        <a href="#experience" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-300">Experience</a>
+                        <a href="#skills" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-300">Skills</a>
+                        <a href="#education" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-300">Education</a>
+                        <a href="#academic-experience" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-300">Academic</a>
+                        <a href="#contact" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-300">Contact</a>
+                    </div>
+                </div>
+                <div class="md:hidden">
+                    <button id="mobile-menu-button" class="inline-flex items-center justify-center p-2 rounded-md text-slate-400 hover:text-white hover:bg-teal-600 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
+                        <span class="sr-only">Open main menu</span>
+                        <svg class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                        <svg class="hidden h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </nav>
+        <div id="mobile-menu" class="md:hidden hidden">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="#about" class="block nav-link px-3 py-2 rounded-md text-base font-medium text-slate-300">About Me</a>
+                <a href="#experience" class="block nav-link px-3 py-2 rounded-md text-base font-medium text-slate-300">Experience</a>
+                <a href="#skills" class="block nav-link px-3 py-2 rounded-md text-base font-medium text-slate-300">Skills</a>
+                <a href="#education" class="block nav-link px-3 py-2 rounded-md text-base font-medium text-slate-300">Education</a>
+                <a href="#academic-experience" class="block nav-link px-3 py-2 rounded-md text-base font-medium text-slate-300">Academic</a>
+                <a href="#contact" class="block nav-link px-3 py-2 rounded-md text-base font-medium text-slate-300">Contact</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto p-4 sm:p-6 lg:p-8">
+        <section id="about" class="py-12 md:py-16">
+            <div class="text-center mb-12">
+                <h1 class="text-4xl font-bold text-slate-50 sm:text-5xl">Jose Luis Martinez Flores</h1>
+                <p class="mt-3 text-xl text-teal-400 font-semibold">Principal RF Engineer</p>
+                <p class="mt-1 text-md text-slate-400">US Resident since 2021</p>
+            </div>
+            <div class="bg-slate-800 p-6 sm:p-8 rounded-lg shadow-lg">
+                <h2 class="text-2xl font-semibold text-slate-100 mb-4 section-title-underline">📄 About Me</h2>
+                <p class="text-slate-300 leading-relaxed mb-4">
+                    Welcome to my interactive CV. This page is designed to provide a dynamic overview of my professional journey, skills, and qualifications as a Principal RF Engineer. I am a highly qualified and results-oriented professional with over 20 years of extensive global experience in mobile telecommunications, specializing in radio frequency design, optimization, and research.
+                </p>
+                <p class="text-slate-300 leading-relaxed mb-4">
+                    I am a proven leader with a strong background in academic instruction, project management, and business development. Expert in utilizing advanced RF planning and performance tools (Atoll, Asset, COPS, EDX) to enhance network coverage and capacity, with a comprehensive understanding of 5G, LTE, UMTS, GSM, and WiMAX technologies. Bilingual in English and Spanish. Explore the sections below to learn more about my experience, technical expertise, and academic background.
+                </p>
+            </div>
+        </section>
+
+        <section id="experience" class="py-12 md:py-16">
+            <h2 class="text-3xl font-bold text-center text-slate-50 mb-2 section-title-underline mx-auto">💼 Professional Experience</h2>
+            <p class="text-center text-slate-400 mb-12 leading-relaxed max-w-3xl mx-auto">
+                This section outlines my career progression, detailing my key roles and responsibilities across various leading telecommunications companies. Each position highlights my contributions to RF design, optimization, training, and management.
+            </p>
+            <div class="relative mt-8">
+                <div class="timeline-line hidden sm:block"></div>
+                <div class="space-y-12">
+                    
+                    <div class="relative sm:ml-4 timeline-item">
+                        <div class="bg-slate-800 p-6 rounded-lg shadow-lg border-l-4 border-teal-500">
+                            <h3 class="text-xl font-semibold text-teal-400">Principal RF Engineer & Trainer</h3>
+                            <p class="text-sm text-slate-400 mb-1">Forsk US Inc. (Chicago, USA) | July 2014 – Present</p>
+                            <ul class="list-disc list-inside text-slate-300 space-y-1 mt-2 text-sm leading-relaxed">
+                                <li>Led Atoll pre-sales and post-sales activities for Mexico and Central America, driving client engagement and successful tool implementation.</li>
+                                <li>Provided expert technical training, mentoring, and consultancy services to diverse teams across North and Central America.</li>
+                                <li>Served as Technical Account Manager for key strategic clients, including AT&T Mexico and Telcel, ensuring high client satisfaction and retention.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="relative sm:ml-4 timeline-item">
+                        <div class="bg-slate-800 p-6 rounded-lg shadow-lg border-l-4 border-teal-500">
+                            <h3 class="text-xl font-semibold text-teal-400">Optimization Director</h3>
+                            <p class="text-sm text-slate-400 mb-1">Grupo Iusacell (Mexico City, Mexico) | March 2013 – June 2014</p>
+                            <ul class="list-disc list-inside text-slate-300 space-y-1 mt-2 text-sm leading-relaxed">
+                                <li>Managed and led a nationwide team of 60 engineers, establishing and optimizing network performance processes.</li>
+                                <li>Spearheaded the implementation of optimization strategies utilizing performance, radio planning, and geolocation tools, significantly improving network efficiency.</li>
+                                <li>Prepared and managed departmental budgets, contributing directly to the monetization of the mobile data network.</li>
+                                <li>Delivered critical executive reports and strategic recommendations to the CTO and CEO.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="relative sm:ml-4 timeline-item">
+                        <div class="bg-slate-800 p-6 rounded-lg shadow-lg border-l-4 border-teal-500">
+                            <h3 class="text-xl font-semibold text-teal-400">Senior Support Engineer</h3>
+                            <p class="text-sm text-slate-400 mb-1">Forsk US Inc. (Chicago, USA) | February 2011 – February 2013</p>
+                            <ul class="list-disc list-inside text-slate-300 space-y-1 mt-2 text-sm leading-relaxed">
+                                <li>Provided in-depth technical support for Atoll, a leading radio planning tool, across various mobile technologies including GSM, UMTS-HSPA, CDMA2000, LTE, and Microwave Modules.</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="relative sm:ml-4 timeline-item">
+                        <div class="bg-slate-800 p-6 rounded-lg shadow-lg border-l-4 border-teal-500">
+                            <h3 class="text-xl font-semibold text-teal-400">Global Trainer</h3>
+                            <p class="text-sm text-slate-400 mb-1">Aircom International (Mexico City, Mexico & London, UK) | September 2005 – February 2011</p>
+                            <ul class="list-disc list-inside text-slate-300 space-y-1 mt-2 text-sm leading-relaxed">
+                                <li>Conducted comprehensive training programs on Radiofrequency, OSS performance, Microwave, and Mobile Telecommunication technologies (GSM, UMTS-HSPA, CDMA2000, WiMAX, LTE).</li>
+                                <li>Designed and developed high-quality, impactful training materials for global audiences.</li>
+                                <li>Provided specialized consultancy in Radiofrequency Technology, with a focus on UMTS-HSPA and WiMAX.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="relative sm:ml-4 timeline-item">
+                        <div class="bg-slate-800 p-6 rounded-lg shadow-lg border-l-4 border-teal-500">
+                            <h3 class="text-xl font-semibold text-teal-400">Senior RF Engineer</h3>
+                            <p class="text-sm text-slate-400 mb-1">MVSNet (Mexico City, Mexico) | July 2004 – September 2005</p>
+                            <ul class="list-disc list-inside text-slate-300 space-y-1 mt-2 text-sm leading-relaxed">
+                                <li>Executed radiofrequency design for pre-WiMAX and WiMAX systems, ensuring optimal network performance.</li>
+                                <li>Conducted thorough site surveys, network optimization, and drive tests.</li>
+                            </ul>
+                        </div>
+                    </div>
+                     <div class="relative sm:ml-4 timeline-item">
+                        <div class="bg-slate-800 p-6 rounded-lg shadow-lg border-l-4 border-teal-500">
+                            <h3 class="text-xl font-semibold text-teal-400">Senior RF Engineer and Researcher</h3>
+                            <p class="text-sm text-slate-400 mb-1">Medialab Asia (New Delhi, India) | February 2003 – June 2004</p>
+                            <ul class="list-disc list-inside text-slate-300 space-y-1 mt-2 text-sm leading-relaxed">
+                                <li>Designed and implemented innovative rural communications systems.</li>
+                                <li>Developed and delivered training programs in Electromagnetism and Mobile Communications Technologies.</li>
+                                <li>Contributed to cutting-edge antenna design and investigation projects.</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="relative sm:ml-4 timeline-item">
+                        <div class="bg-slate-800 p-6 rounded-lg shadow-lg border-l-4 border-teal-500">
+                            <h3 class="text-xl font-semibold text-teal-400">BSC & Data Fill Manager</h3>
+                            <p class="text-sm text-slate-400 mb-1">Unefon (Mexico City, Mexico) | October 1999 – February 2003</p>
+                            <ul class="list-disc list-inside text-slate-300 space-y-1 mt-2 text-sm leading-relaxed">
+                                <li>Managed data fill control for BSC (CDMA ONE) and oversaw critical software upgrades.</li>
+                                <li>Designed and implemented in-house software solutions to enhance operational efficiency.</li>
+                                <li>Coordinated and mentored a team of 5 engineers.</li>
+                                <li>Responsible for comprehensive budget control and design.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="skills" class="py-12 md:py-16">
+            <h2 class="text-3xl font-bold text-center text-slate-50 mb-2 section-title-underline mx-auto">🛠️ Technical and Professional Skills</h2>
+            <p class="text-center text-slate-400 mb-12 leading-relaxed max-w-3xl mx-auto">
+                Here you will find a breakdown of my technical competencies, including proficiency in specialized RF and GIS software, a deep understanding of various mobile and RF technologies, and other professional skills that contribute to my effectiveness as an engineer and leader. The chart below provides a visual summary of my skill distribution across key areas.
+            </p>
+            
+            <div class="bg-slate-800 p-6 sm:p-8 rounded-lg shadow-lg mb-12">
+                <h3 class="text-xl font-semibold text-slate-100 mb-4">Technical Skills Distribution</h3>
+                <div class="chart-container">
+                    <canvas id="skillsChart"></canvas>
+                </div>
+                 <p class="text-xs text-center text-slate-400 mt-4">This chart represents the number of tools/technologies listed under each main technical skill category.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="bg-slate-800 p-6 rounded-lg shadow-lg">
+                    <h4 class="text-lg font-semibold text-teal-400 mb-3">📡 RF Software Design</h4>
+                    <ul class="list-disc list-inside text-slate-300 space-y-1 text-sm">
+                        <li>Atoll (Radiofrequency Planning)</li>
+                        <li>Asset (Radiofrequency Planning)</li>
+                        <li>Connect (Microwave Planning)</li>
+                        <li>COPS (Performance Tool/Geolocation)</li>
+                        <li>EDX (Radiofrequency Planning)</li>
+                    </ul>
+                </div>
+                <div class="bg-slate-800 p-6 rounded-lg shadow-lg">
+                    <h4 class="text-lg font-semibold text-teal-400 mb-3">🗺️ GIS Software</h4>
+                    <ul class="list-disc list-inside text-slate-300 space-y-1 text-sm">
+                        <li>MapInfo</li>
+                        <li>GlobalMapper</li>
+                        <li>QGIS</li>
+                    </ul>
+                </div>
+                <div class="bg-slate-800 p-6 rounded-lg shadow-lg">
+                    <h4 class="text-lg font-semibold text-teal-400 mb-3">📱 RF Mobile Technologies</h4>
+                    <ul class="list-disc list-inside text-slate-300 space-y-1 text-sm">
+                        <li>5G/NBIoT</li>
+                        <li>LTE / LTE Advanced</li>
+                        <li>UMTS/HSPA</li>
+                        <li>GSM/GPRS</li>
+                        <li>CDMA</li>
+                        <li>WiMAX</li>
+                    </ul>
+                </div>
+                <div class="bg-slate-800 p-6 rounded-lg shadow-lg">
+                    <h4 class="text-lg font-semibold text-teal-400 mb-3">💡 RF Technologies</h4>
+                    <ul class="list-disc list-inside text-slate-300 space-y-1 text-sm">
+                        <li>RF ID</li>
+                        <li>GEO Satellite Link Budget Calculations</li>
+                        <li>Radio Propagation</li>
+                        <li>Antennas</li>
+                        <li>Satellites</li>
+                    </ul>
+                </div>
+                <div class="bg-slate-800 p-6 rounded-lg shadow-lg md:col-span-2 lg:col-span-1">
+                    <h4 class="text-lg font-semibold text-teal-400 mb-3">📋 Other Professional Skills</h4>
+                     <ul class="list-disc list-inside text-slate-300 space-y-1 text-sm">
+                        <li>Project Management</li>
+                        <li>Business Development</li>
+                        <li>Customer Care</li>
+                        <li>Analytic and Computer Programming</li>
+                        <li>Technical Training</li>
+                        <li>Scientific and Technical Article Redaction</li>
+                        <li>Leadership</li>
+                        <li>Teamwork, Organization, Planning</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="education" class="py-12 md:py-16">
+            <h2 class="text-3xl font-bold text-center text-slate-50 mb-2 section-title-underline mx-auto">🎓 Education</h2>
+             <p class="text-center text-slate-400 mb-12 leading-relaxed max-w-3xl mx-auto">
+                My academic background has been fundamental in building a strong foundation in engineering and telecommunications, driving my ability to innovate and lead in the field.
+            </p>
+            <div class="bg-slate-800 p-6 sm:p-8 rounded-lg shadow-lg max-w-2xl mx-auto">
+                <div class="mb-6">
+                    <h3 class="text-xl font-semibold text-teal-400">Master in Electric Engineering (Communications)</h3>
+                    <p class="text-slate-400">National University of Mexico (UNAM) | 1999</p>
+                </div>
+                <div>
+                    <h3 class="text-xl font-semibold text-teal-400">Bachelor in Computer Engineering</h3>
+                    <p class="text-slate-400">National University of Mexico (UNAM) | 1994</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="academic-experience" class="py-12 md:py-16">
+            <h2 class="text-3xl font-bold text-center text-slate-50 mb-2 section-title-underline mx-auto">👨‍🏫 Academic Experience</h2>
+            <p class="text-center text-slate-400 mb-12 leading-relaxed max-w-3xl mx-auto">
+                In addition to my industry work, I have dedicated time to academia, sharing knowledge and fostering the growth of future telecommunications professionals.
+            </p>
+            <div class="bg-slate-800 p-6 sm:p-8 rounded-lg shadow-lg max-w-2xl mx-auto text-center">
+                 <p class="text-slate-300 text-lg">
+                    University Professor for 10 years.
+                </p>
+                <p class="text-slate-400 mt-2">Subjects taught: Antennas, Satellites, Microwaves, and Radio Propagation.</p>
+            </div>
+        </section>
+
+        <section id="contact" class="py-12 md:py-16 bg-slate-950 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8">
+            <div class="max-w-3xl mx-auto text-center">
+                <h2 class="text-3xl font-bold text-slate-50 mb-2 section-title-underline mx-auto">📧 Contact</h2>
+                 <p class="text-slate-400 mb-8 leading-relaxed">
+                    I am open to new opportunities and collaborations. Feel free to get in touch.
+                </p>
+                <div class="space-y-4">
+                    <p class="text-lg text-slate-300">
+                        <a href="mailto:bokermarte@gmail.com" class="hover:text-teal-400 transition-colors">📧 bokermarte@gmail.com</a>
+                    </p>
+                    <p class="text-lg text-slate-300">
+                        <a href="tel:+13126109965" class="hover:text-teal-400 transition-colors">📞 +1 (312) 610-9965</a>
+                    </p>
+                    <p class="text-lg text-slate-300">
+                        <a href="https://www.linkedin.com/in/jose-luis-martinez-13a5402" target="_blank" rel="noopener noreferrer" class="hover:text-teal-400 transition-colors">
+                            <svg class="w-6 h-6 inline-block mr-2" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+                            LinkedIn Profile
+                        </a>
+                    </p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-slate-950 text-slate-300 py-8 text-center">
+        <p>&copy; <span id="currentYear"></span> Jose Luis Martinez Flores. All rights reserved.</p>
+        <p class="text-sm mt-1">Interactive CV designed for better visualization.</p>
+    </footer>
+
+    <script>
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const navLinks = mobileMenu.querySelectorAll('a');
+
+        mobileMenuButton.addEventListener('click', () => {
+            const isExpanded = mobileMenuButton.getAttribute('aria-expanded') === 'true' || false;
+            mobileMenuButton.setAttribute('aria-expanded', !isExpanded);
+            mobileMenu.classList.toggle('hidden');
+            mobileMenuButton.querySelectorAll('svg').forEach(svg => svg.classList.toggle('hidden'));
+        });
+        
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
+                mobileMenuButton.setAttribute('aria-expanded', 'false');
+                mobileMenuButton.querySelectorAll('svg').forEach(svg => {
+                    if(svg.classList.contains('block')) {
+                        svg.classList.remove('hidden');
+                    } else {
+                        svg.classList.add('hidden');
+                    }
+                });
+                 mobileMenuButton.querySelector('svg:first-child').classList.remove('hidden');
+                 mobileMenuButton.querySelector('svg:last-child').classList.add('hidden');
+            });
+        });
+        
+        const skillsData = {
+            labels: ['RF Software Design', 'GIS Software', 'RF Mobile Technologies', 'RF Technologies'],
+            datasets: [{
+                label: 'Number of Skills/Tools',
+                data: [5, 3, 6, 5],
+                backgroundColor: [
+                    'rgba(54, 162, 235, 0.8)', /* Blue, slightly more opaque */
+                    'rgba(255, 206, 86, 0.8)', /* Yellow, slightly more opaque */
+                    'rgba(20, 184, 166, 0.8)', /* Teal-500, slightly more opaque */
+                    'rgba(153, 102, 255, 0.8)' /* Purple, slightly more opaque */
+                ],
+                borderColor: [
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(20, 184, 166, 1)',
+                    'rgba(153, 102, 255, 1)'
+                ],
+                borderWidth: 1
+            }]
+        };
+
+        const skillsChartCtx = document.getElementById('skillsChart').getContext('2d');
+        new Chart(skillsChartCtx, {
+            type: 'bar',
+            data: skillsData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                indexAxis: 'y',
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        ticks: {
+                             stepSize: 1,
+                             color: '#cbd5e1' /* slate-300 for ticks */
+                        },
+                        grid: {
+                            color: 'rgba(71, 85, 105, 0.5)' /* slate-700 with opacity for grid lines */
+                        }
+                    },
+                    y: {
+                        ticks: {
+                            font: {
+                                size: 10,
+                                color: '#cbd5e1' /* slate-300 for ticks */
+                            },
+                            autoSkip: false,
+                             callback: function(value, index, values) {
+                                const label = this.getLabelForValue(value);
+                                const maxLength = 16;
+                                if (label.length > maxLength) {
+                                    let lines = [];
+                                    let currentLine = '';
+                                    label.split(' ').forEach(word => {
+                                        if ((currentLine + word).length > maxLength) {
+                                            lines.push(currentLine.trim());
+                                            currentLine = '';
+                                        }
+                                        currentLine += word + ' ';
+                                    });
+                                    lines.push(currentLine.trim());
+                                    return lines;
+                                }
+                                return label;
+                            }
+                        },
+                        grid: {
+                            color: 'rgba(71, 85, 105, 0.5)' /* slate-700 with opacity for grid lines */
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.parsed.x !== null) {
+                                    label += context.parsed.x;
+                                }
+                                return label;
+                            }
+                        },
+                        backgroundColor: 'rgba(30, 41, 59, 0.9)', /* slate-900 for tooltip background */
+                        titleColor: '#f8fafc', /* slate-50 for tooltip title */
+                        bodyColor: '#e2e8f0' /* slate-200 for tooltip body */
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
